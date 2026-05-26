@@ -1,5 +1,6 @@
 package modchart.components.actor.base;
 
+import glm.Mat4;
 import modchart.math.Transform;
 
 interface IActor {
@@ -15,8 +16,6 @@ interface IActor {
 	public var rotationZ(get, set):Float;
 	public var scaleX(get, set):Float;
 	public var scaleY(get, set):Float;
-	public var skewX(get, set):Float;
-	public var skewY(get, set):Float;
 	public var alpha(get, set):Float;
 
 	public var visible:Bool;
@@ -32,6 +31,6 @@ interface IActor {
 
 	// lifecycle
 	public function update(elapsed:Float):Void;
-	public function draw(parentTransform:Transform):Void;
+	public function draw(parentMatrix:Mat4):Void;
 	public function destroy():Void;
 }

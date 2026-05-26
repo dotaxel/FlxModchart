@@ -1,4 +1,6 @@
 package modchart;
 
-import modchart.internal.Global;
+#if !macro
 import modchart.internal.Global.log as ModchartLog;
+import modchart.internal.Global;
+#end

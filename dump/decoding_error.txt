@@ -1,0 +1,820 @@
+[{
+	access: [APublic]
+	doc: null
+	kind: FProp(default, set, TPath({
+		name: Float
+		pack: []
+		params: []
+		sub: null
+	}), {
+		expr: EConst(CInt(0, null))
+		pos: #pos
+	})
+	meta: [{
+		name: :dirty
+		params: []
+		pos: #pos
+	}]
+	name: x
+	pos: #pos
+}, {
+	access: [APublic]
+	doc: null
+	kind: FVar(TPath({
+		name: Float
+		pack: []
+		params: []
+		sub: null
+	}), {
+		expr: EConst(CInt(0, null))
+		pos: #pos
+	})
+	meta: []
+	name: y
+	pos: #pos
+}, {
+	access: [APublic]
+	doc: null
+	kind: FVar(TPath({
+		name: Float
+		pack: []
+		params: []
+		sub: null
+	}), {
+		expr: EConst(CInt(0, null))
+		pos: #pos
+	})
+	meta: []
+	name: z
+	pos: #pos
+}, {
+	access: [APublic]
+	doc: null
+	kind: FVar(TPath({
+		name: Float
+		pack: []
+		params: []
+		sub: null
+	}), {
+		expr: EConst(CInt(0, null))
+		pos: #pos
+	})
+	meta: []
+	name: rotationX
+	pos: #pos
+}, {
+	access: [APublic]
+	doc: null
+	kind: FVar(TPath({
+		name: Float
+		pack: []
+		params: []
+		sub: null
+	}), {
+		expr: EConst(CInt(0, null))
+		pos: #pos
+	})
+	meta: []
+	name: rotationY
+	pos: #pos
+}, {
+	access: [APublic]
+	doc: null
+	kind: FVar(TPath({
+		name: Float
+		pack: []
+		params: []
+		sub: null
+	}), {
+		expr: EConst(CInt(0, null))
+		pos: #pos
+	})
+	meta: []
+	name: rotationZ
+	pos: #pos
+}, {
+	access: [APublic]
+	doc: null
+	kind: FVar(TPath({
+		name: Float
+		pack: []
+		params: []
+		sub: null
+	}), {
+		expr: EConst(CInt(60, null))
+		pos: #pos
+	})
+	meta: []
+	name: fov
+	pos: #pos
+}, {
+	access: [APublic]
+	doc: null
+	kind: FVar(TPath({
+		name: Float
+		pack: []
+		params: []
+		sub: null
+	}), {
+		expr: EConst(CFloat(0.1, null))
+		pos: #pos
+	})
+	meta: []
+	name: near
+	pos: #pos
+}, {
+	access: [APublic]
+	doc: null
+	kind: FVar(TPath({
+		name: Float
+		pack: []
+		params: []
+		sub: null
+	}), {
+		expr: EConst(CInt(1000, null))
+		pos: #pos
+	})
+	meta: []
+	name: far
+	pos: #pos
+}, {
+	access: [APublic]
+	doc: null
+	kind: FVar(TPath({
+		name: Float
+		pack: []
+		params: []
+		sub: null
+	}), {
+		expr: EConst(CFloat(1.0, null))
+		pos: #pos
+	})
+	meta: []
+	name: aspect
+	pos: #pos
+}, {
+	access: []
+	doc: null
+	kind: FVar(TPath({
+		name: Mat4
+		pack: []
+		params: []
+		sub: null
+	}), null)
+	meta: []
+	name: _viewMatrix
+	pos: #pos
+}, {
+	access: []
+	doc: null
+	kind: FVar(TPath({
+		name: Mat4
+		pack: []
+		params: []
+		sub: null
+	}), null)
+	meta: []
+	name: _projMatrix
+	pos: #pos
+}, {
+	access: []
+	doc: null
+	kind: FVar(TPath({
+		name: Vec3
+		pack: []
+		params: []
+		sub: null
+	}), null)
+	meta: []
+	name: _vec3
+	pos: #pos
+}, {
+	access: []
+	doc: null
+	kind: FVar(TPath({
+		name: Quat
+		pack: []
+		params: []
+		sub: null
+	}), null)
+	meta: []
+	name: _quat
+	pos: #pos
+}, {
+	access: []
+	doc: null
+	kind: FVar(TPath({
+		name: Vec3
+		pack: []
+		params: []
+		sub: null
+	}), null)
+	meta: []
+	name: _scale
+	pos: #pos
+}, {
+	access: []
+	doc: null
+	kind: FVar(TPath({
+		name: Bool
+		pack: []
+		params: []
+		sub: null
+	}), {
+		expr: EConst(CIdent(true))
+		pos: #pos
+	})
+	meta: []
+	name: _viewDirty
+	pos: #pos
+}, {
+	access: []
+	doc: null
+	kind: FVar(TPath({
+		name: Bool
+		pack: []
+		params: []
+		sub: null
+	}), {
+		expr: EConst(CIdent(true))
+		pos: #pos
+	})
+	meta: []
+	name: _projDirty
+	pos: #pos
+}, {
+	access: [APublic]
+	doc: null
+	kind: FFun({
+		args: []
+		expr: {
+			expr: EBlock([{
+				expr: EBinop(OpAssign, {
+					expr: EConst(CIdent(_viewMatrix))
+					pos: #pos
+				}, {
+					expr: ENew({
+						name: Mat4
+						pack: []
+						params: []
+						sub: null
+					}, [])
+					pos: #pos
+				})
+				pos: #pos
+			}, {
+				expr: EBinop(OpAssign, {
+					expr: EConst(CIdent(_projMatrix))
+					pos: #pos
+				}, {
+					expr: ENew({
+						name: Mat4
+						pack: []
+						params: []
+						sub: null
+					}, [])
+					pos: #pos
+				})
+				pos: #pos
+			}, {
+				expr: EBinop(OpAssign, {
+					expr: EConst(CIdent(_vec3))
+					pos: #pos
+				}, {
+					expr: ENew({
+						name: Vec3
+						pack: []
+						params: []
+						sub: null
+					}, [])
+					pos: #pos
+				})
+				pos: #pos
+			}, {
+				expr: EBinop(OpAssign, {
+					expr: EConst(CIdent(_quat))
+					pos: #pos
+				}, {
+					expr: ENew({
+						name: Quat
+						pack: []
+						params: []
+						sub: null
+					}, [])
+					pos: #pos
+				})
+				pos: #pos
+			}, {
+				expr: EBinop(OpAssign, {
+					expr: EConst(CIdent(_scale))
+					pos: #pos
+				}, {
+					expr: ENew({
+						name: Vec3
+						pack: []
+						params: []
+						sub: null
+					}, [{
+						expr: EConst(CInt(1, null))
+						pos: #pos
+					}, {
+						expr: EConst(CInt(1, null))
+						pos: #pos
+					}, {
+						expr: EConst(CInt(1, null))
+						pos: #pos
+					}])
+					pos: #pos
+				})
+				pos: #pos
+			}, {
+				expr: ECall({
+					expr: EConst(CIdent(reset))
+					pos: #pos
+				}, [])
+				pos: #pos
+			}])
+			pos: #pos
+		}
+		params: []
+		ret: null
+	})
+	meta: []
+	name: new
+	pos: #pos
+}, {
+	access: [APublic, AInline]
+	doc: null
+	kind: FFun({
+		args: []
+		expr: {
+			expr: EBlock([{
+				expr: EBinop(OpAssign, {
+					expr: EConst(CIdent(_viewDirty))
+					pos: #pos
+				}, {
+					expr: EConst(CIdent(true))
+					pos: #pos
+				})
+				pos: #pos
+			}])
+			pos: #pos
+		}
+		params: []
+		ret: TPath({
+			name: Void
+			pack: []
+			params: []
+			sub: null
+		})
+	})
+	meta: []
+	name: markViewDirty
+	pos: #pos
+}, {
+	access: [APublic, AInline]
+	doc: null
+	kind: FFun({
+		args: []
+		expr: {
+			expr: EBlock([{
+				expr: EBinop(OpAssign, {
+					expr: EConst(CIdent(_projDirty))
+					pos: #pos
+				}, {
+					expr: EConst(CIdent(true))
+					pos: #pos
+				})
+				pos: #pos
+			}])
+			pos: #pos
+		}
+		params: []
+		ret: TPath({
+			name: Void
+			pack: []
+			params: []
+			sub: null
+		})
+	})
+	meta: []
+	name: markProjDirty
+	pos: #pos
+}, {
+	access: [APublic, AInline]
+	doc: null
+	kind: FFun({
+		args: []
+		expr: {
+			expr: EBlock([{
+				expr: EBinop(OpAssign, {
+					expr: EConst(CIdent(_viewDirty))
+					pos: #pos
+				}, {
+					expr: EConst(CIdent(true))
+					pos: #pos
+				})
+				pos: #pos
+			}, {
+				expr: EBinop(OpAssign, {
+					expr: EConst(CIdent(_projDirty))
+					pos: #pos
+				}, {
+					expr: EConst(CIdent(true))
+					pos: #pos
+				})
+				pos: #pos
+			}])
+			pos: #pos
+		}
+		params: []
+		ret: TPath({
+			name: Void
+			pack: []
+			params: []
+			sub: null
+		})
+	})
+	meta: []
+	name: markDirty
+	pos: #pos
+}, {
+	access: [APublic]
+	doc: null
+	kind: FFun({
+		args: []
+		expr: {
+			expr: EBlock([{
+				expr: EBinop(OpAssign, {
+					expr: EConst(CIdent(x))
+					pos: #pos
+				}, {
+					expr: EConst(CInt(0, null))
+					pos: #pos
+				})
+				pos: #pos
+			}, {
+				expr: EBinop(OpAssign, {
+					expr: EConst(CIdent(y))
+					pos: #pos
+				}, {
+					expr: EConst(CInt(0, null))
+					pos: #pos
+				})
+				pos: #pos
+			}, {
+				expr: EBinop(OpAssign, {
+					expr: EConst(CIdent(z))
+					pos: #pos
+				}, {
+					expr: EConst(CInt(0, null))
+					pos: #pos
+				})
+				pos: #pos
+			}, {
+				expr: EBinop(OpAssign, {
+					expr: EConst(CIdent(rotationX))
+					pos: #pos
+				}, {
+					expr: EConst(CInt(0, null))
+					pos: #pos
+				})
+				pos: #pos
+			}, {
+				expr: EBinop(OpAssign, {
+					expr: EConst(CIdent(rotationY))
+					pos: #pos
+				}, {
+					expr: EConst(CInt(0, null))
+					pos: #pos
+				})
+				pos: #pos
+			}, {
+				expr: EBinop(OpAssign, {
+					expr: EConst(CIdent(rotationZ))
+					pos: #pos
+				}, {
+					expr: EConst(CInt(0, null))
+					pos: #pos
+				})
+				pos: #pos
+			}, {
+				expr: EBinop(OpAssign, {
+					expr: EConst(CIdent(fov))
+					pos: #pos
+				}, {
+					expr: EConst(CInt(60, null))
+					pos: #pos
+				})
+				pos: #pos
+			}, {
+				expr: EBinop(OpAssign, {
+					expr: EConst(CIdent(near))
+					pos: #pos
+				}, {
+					expr: EConst(CFloat(0.1, null))
+					pos: #pos
+				})
+				pos: #pos
+			}, {
+				expr: EBinop(OpAssign, {
+					expr: EConst(CIdent(far))
+					pos: #pos
+				}, {
+					expr: EConst(CInt(1000, null))
+					pos: #pos
+				})
+				pos: #pos
+			}, {
+				expr: EBinop(OpAssign, {
+					expr: EConst(CIdent(aspect))
+					pos: #pos
+				}, {
+					expr: EBinop(OpDiv, {
+						expr: EConst(CInt(1280, null))
+						pos: #pos
+					}, {
+						expr: EConst(CInt(720, null))
+						pos: #pos
+					})
+					pos: #pos
+				})
+				pos: #pos
+			}, {
+				expr: ECall({
+					expr: EConst(CIdent(markDirty))
+					pos: #pos
+				}, [])
+				pos: #pos
+			}])
+			pos: #pos
+		}
+		params: []
+		ret: TPath({
+			name: Void
+			pack: []
+			params: []
+			sub: null
+		})
+	})
+	meta: []
+	name: reset
+	pos: #pos
+}, {
+	access: [APublic]
+	doc: null
+	kind: FFun({
+		args: []
+		expr: {
+			expr: EBlock([{
+				expr: EIf({
+					expr: EConst(CIdent(_viewDirty))
+					pos: #pos
+				}, {
+					expr: EBlock([{
+						expr: ECall({
+							expr: EField({
+								expr: EConst(CIdent(Vec3))
+								pos: #pos
+							}, set, Normal)
+							pos: #pos
+						}, [{
+							expr: EConst(CIdent(_vec3))
+							pos: #pos
+						}, {
+							expr: EUnop(OpNeg, false, {
+								expr: EConst(CIdent(x))
+								pos: #pos
+							})
+							pos: #pos
+						}, {
+							expr: EUnop(OpNeg, false, {
+								expr: EConst(CIdent(y))
+								pos: #pos
+							})
+							pos: #pos
+						}, {
+							expr: EUnop(OpNeg, false, {
+								expr: EConst(CIdent(z))
+								pos: #pos
+							})
+							pos: #pos
+						}])
+						pos: #pos
+					}, {
+						expr: ECall({
+							expr: EField({
+								expr: EConst(CIdent(Quat))
+								pos: #pos
+							}, fromEuler, Normal)
+							pos: #pos
+						}, [{
+							expr: EUnop(OpNeg, false, {
+								expr: EConst(CIdent(rotationX))
+								pos: #pos
+							})
+							pos: #pos
+						}, {
+							expr: EUnop(OpNeg, false, {
+								expr: EConst(CIdent(rotationY))
+								pos: #pos
+							})
+							pos: #pos
+						}, {
+							expr: EUnop(OpNeg, false, {
+								expr: EConst(CIdent(rotationZ))
+								pos: #pos
+							})
+							pos: #pos
+						}, {
+							expr: EConst(CIdent(_quat))
+							pos: #pos
+						}])
+						pos: #pos
+					}, {
+						expr: ECall({
+							expr: EField({
+								expr: EConst(CIdent(GLM))
+								pos: #pos
+							}, transform, Normal)
+							pos: #pos
+						}, [{
+							expr: EConst(CIdent(_vec3))
+							pos: #pos
+						}, {
+							expr: EConst(CIdent(_quat))
+							pos: #pos
+						}, {
+							expr: EConst(CIdent(_scale))
+							pos: #pos
+						}, {
+							expr: EConst(CIdent(_viewMatrix))
+							pos: #pos
+						}])
+						pos: #pos
+					}, {
+						expr: EBinop(OpAssign, {
+							expr: EConst(CIdent(_viewDirty))
+							pos: #pos
+						}, {
+							expr: EConst(CIdent(false))
+							pos: #pos
+						})
+						pos: #pos
+					}])
+					pos: #pos
+				}, null)
+				pos: #pos
+			}, {
+				expr: EReturn({
+					expr: EConst(CIdent(_viewMatrix))
+					pos: #pos
+				})
+				pos: #pos
+			}])
+			pos: #pos
+		}
+		params: []
+		ret: TPath({
+			name: Mat4
+			pack: []
+			params: []
+			sub: null
+		})
+	})
+	meta: []
+	name: getViewMatrix
+	pos: #pos
+}, {
+	access: [APublic]
+	doc: null
+	kind: FFun({
+		args: []
+		expr: {
+			expr: EBlock([{
+				expr: EIf({
+					expr: EConst(CIdent(_projDirty))
+					pos: #pos
+				}, {
+					expr: EBlock([{
+						expr: ECall({
+							expr: EField({
+								expr: EConst(CIdent(GLM))
+								pos: #pos
+							}, perspective, Normal)
+							pos: #pos
+						}, [{
+							expr: EBinop(OpDiv, {
+								expr: EBinop(OpMult, {
+									expr: EConst(CIdent(fov))
+									pos: #pos
+								}, {
+									expr: EField({
+										expr: EConst(CIdent(Math))
+										pos: #pos
+									}, PI, Normal)
+									pos: #pos
+								})
+								pos: #pos
+							}, {
+								expr: EConst(CFloat(180.0, null))
+								pos: #pos
+							})
+							pos: #pos
+						}, {
+							expr: EConst(CIdent(aspect))
+							pos: #pos
+						}, {
+							expr: EConst(CIdent(near))
+							pos: #pos
+						}, {
+							expr: EConst(CIdent(far))
+							pos: #pos
+						}, {
+							expr: EConst(CIdent(_projMatrix))
+							pos: #pos
+						}])
+						pos: #pos
+					}, {
+						expr: EBinop(OpAssign, {
+							expr: EConst(CIdent(_projDirty))
+							pos: #pos
+						}, {
+							expr: EConst(CIdent(false))
+							pos: #pos
+						})
+						pos: #pos
+					}])
+					pos: #pos
+				}, null)
+				pos: #pos
+			}, {
+				expr: EReturn({
+					expr: EConst(CIdent(_projMatrix))
+					pos: #pos
+				})
+				pos: #pos
+			}])
+			pos: #pos
+		}
+		params: []
+		ret: TPath({
+			name: Mat4
+			pack: []
+			params: []
+			sub: null
+		})
+	})
+	meta: []
+	name: getProjMatrix
+	pos: #pos
+}, {
+	access: [AInline]
+	doc: null
+	kind: FFun({
+		args: [{
+			meta: null
+			name: vv_
+			opt: null
+			type: TPath({
+				name: Float
+				pack: []
+				params: []
+				sub: null
+			})
+			value: null
+		}]
+		expr: {
+			expr: EBlock([{
+				expr: EBinop(OpAssign, {
+					expr: null <- expected value
+					pos: null <- expected value
+				}, {
+					expr: EConst(CIdent(true))
+					pos: #pos
+				})
+				pos: #pos
+			}, {
+				expr: EReturn({
+					expr: EBinop(OpAssign, {
+						expr: EConst(CIdent(x))
+						pos: #pos
+					}, {
+						expr: EConst(CIdent(vv_))
+						pos: #pos
+					})
+					pos: #pos
+				})
+				pos: #pos
+			}])
+			pos: #pos
+		}
+		params: null
+		ret: null
+	})
+	meta: null
+	name: set_x
+	pos: #pos
+}]
+line 790: expected value
+line 791: expected value

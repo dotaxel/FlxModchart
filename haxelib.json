@@ -1,0 +1,14 @@
+{
+  "name": "flxmodchart",
+  "license": "None",
+  "description": "An modcharting plugin for Friday Night Funkin'",
+  "version": "0",
+  "releasenote": "velgagllikvsojbhuaj.",
+  "contributors": [
+    "dotaxel"
+  ],
+  "tags": [ ],
+  "dependencies": {
+  },
+  "url": "https://github.com/TheoDevelops/FunkinModchart"
+}

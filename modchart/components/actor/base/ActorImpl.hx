@@ -1,8 +1,9 @@
 package modchart.components.actor.base;
 
+import glm.Mat4;
 import modchart.math.Transform;
 
-@:nullSafety(Strict)
+// @:nullSafety(Strict)
 abstract class ActorImpl implements IActor {
 	public var parent(default, null):IActor;
 	public var ID(default, null):Int;
@@ -18,8 +19,6 @@ abstract class ActorImpl implements IActor {
 	public var scaleX(get, set):Float;
 	public var scaleY(get, set):Float;
 	public var scaleZ(get, set):Float;
-	public var skewX(get, set):Float;
-	public var skewY(get, set):Float;
 	public var alpha(get, set):Float;
 
 	@:noCompletion
@@ -39,16 +38,13 @@ abstract class ActorImpl implements IActor {
 			child.update(elapsed);
 	}
 
-	public function draw(parentTransform:Transform):Void {
+	public function draw(parentMatrix:Null<Mat4>):Void {
 		if (!visible)
 			return;
-		var worldTransform = _localTransform.combine(parentTransform);
-		render(worldTransform);
+		var worldTransform = parentMatrix != null ? _localTransform.getMatrix() * parentMatrix : _localTransform.getMatrix();
 		for (child in _children)
 			child.draw(worldTransform);
 	}
-
-	private function render(worldTransform:Transform):Void {}
 
 	public function destroy():Void {
 		for (child in _children)
@@ -121,78 +117,51 @@ abstract class ActorImpl implements IActor {
 	inline function get_scaleZ()
 		return _localTransform.scaleZ;
 
-	inline function get_skewX()
-		return _localTransform.skewX;
-
-	inline function get_skewY()
-		return _localTransform.skewY;
-
 	inline function get_alpha()
 		return _localTransform.alpha;
 
 	inline function set_x(v) {
 		_localTransform.x = v;
-		_localTransform.markDirty();
 		return v;
 	}
 
 	inline function set_y(v) {
 		_localTransform.y = v;
-		_localTransform.markDirty();
 		return v;
 	}
 
 	inline function set_z(v) {
 		_localTransform.z = v;
-		_localTransform.markDirty();
 		return v;
 	}
 
 	inline function set_rotationX(v) {
 		_localTransform.rotationX = v;
-		_localTransform.markDirty();
 		return v;
 	}
 
 	inline function set_rotationY(v) {
 		_localTransform.rotationY = v;
-		_localTransform.markDirty();
 		return v;
 	}
 
 	inline function set_rotationZ(v) {
 		_localTransform.rotationZ = v;
-		_localTransform.markDirty();
 		return v;
 	}
 
 	inline function set_scaleX(v) {
 		_localTransform.scaleX = v;
-		_localTransform.markDirty();
 		return v;
 	}
 
 	inline function set_scaleY(v) {
 		_localTransform.scaleY = v;
-		_localTransform.markDirty();
 		return v;
 	}
 
 	inline function set_scaleZ(v) {
 		_localTransform.scaleZ = v;
-		_localTransform.markDirty();
-		return v;
-	}
-
-	inline function set_skewX(v) {
-		_localTransform.skewX = v;
-		_localTransform.markDirty();
-		return v;
-	}
-
-	inline function set_skewY(v) {
-		_localTransform.skewY = v;
-		_localTransform.markDirty();
 		return v;
 	}
 

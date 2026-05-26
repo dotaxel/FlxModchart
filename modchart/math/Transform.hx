@@ -1,66 +1,66 @@
 package modchart.math;
 
-import lime.math.Matrix4;
-import lime.math.Vector4;
+import glm.GLM;
+import glm.Mat4;
+import glm.Quat;
+import glm.Vec3;
+import glm.Vec4;
+import lime.utils.Float32Array;
 
+@:build(modchart.internal.macros.DirtyMacro.build())
 class Transform {
-	public var x:Float = 0;
-	public var y:Float = 0;
-	public var z:Float = 0;
+	@:dirty(_dirty) public var x:Float = 0;
+	@:dirty(_dirty) public var y:Float = 0;
+	@:dirty(_dirty) public var z:Float = 0;
 
-	public var rotationX:Float = 0;
-	public var rotationY:Float = 0;
-	public var rotationZ:Float = 0;
+	@:dirty(_dirty) public var rotationX:Float = 0;
+	@:dirty(_dirty) public var rotationY:Float = 0;
+	@:dirty(_dirty) public var rotationZ:Float = 0;
 
-	public var scaleX:Float = 1;
-	public var scaleY:Float = 1;
-	public var scaleZ:Float = 1;
-
-	public var skewX:Float = 0;
-	public var skewY:Float = 0;
+	@:dirty(_dirty) public var scaleX:Float = 1;
+	@:dirty(_dirty) public var scaleY:Float = 1;
+	@:dirty(_dirty) public var scaleZ:Float = 1;
 
 	public var alpha:Float = 1;
 
-	var _matrix:Matrix4 = new Matrix4();
+	var _matrix:Mat4;
+	var _matrixArray:Float32Array;
+
+	var _pos:Vec3;
+	var _scale:Vec3;
+	var _quat:Quat;
+
 	var _dirty:Bool = true;
 
-	public function new() {}
+	public function new() {
+		_matrix = new Mat4();
+		_matrixArray = new Float32Array(4 * 4);
 
-	public inline function markDirty():Void
-		_dirty = true;
+		_pos = new Vec3();
+		_scale = new Vec3();
+		_quat = new Quat();
+	}
 
-	@:pure public inline function isDirty():Bool
-		return _dirty;
-
-	public function getMatrix():Matrix4 {
+	// @formatter:off
+	public function getMatrix():Mat4 {
 		if (_dirty) {
-			_matrix.identity();
-			_matrix.appendTranslation(x, y, z);
-			_matrix.appendRotation(rotationX, new Vector4(1, 0, 0));
-			_matrix.appendRotation(rotationY, new Vector4(0, 1, 0));
-			_matrix.appendRotation(rotationZ, new Vector4(0, 0, 1));
-			_matrix.appendScale(scaleX, scaleY, scaleZ);
+			Vec3.set(_pos, x, y, z);
+			Quat.fromEuler(
+				rotationX * Math.PI / 180.0,
+				rotationY * Math.PI / 180.0,
+				rotationZ * Math.PI / 180.0,
+				_quat
+			);
+			Vec3.set(_scale, scaleX, scaleY, scaleZ);
 
-			// skew (lime doesn't have it)
-			var skew = new Matrix4();
-			skew[4] = Math.tan(skewX * Math.PI / 180);
-			skew[1] = Math.tan(skewY * Math.PI / 180);
-			_matrix.append(skew);
+			GLM.transform(_pos, _quat, _scale, _matrix);
 
 			_dirty = false;
 		}
+
 		return _matrix;
 	}
-
-	public function combine(parent:Transform):Transform {
-		var result = new Transform();
-		result._matrix.copyFrom(parent.getMatrix());
-		result._matrix.append(getMatrix());
-		result.alpha = parent.alpha * alpha;
-		result._dirty = false;
-		return result;
-	}
-
+	// @formatter:on
 	public inline function reset():Void {
 		x = 0;
 		y = 0;
@@ -71,25 +71,7 @@ class Transform {
 		scaleX = 1;
 		scaleY = 1;
 		scaleZ = 1;
-		skewX = 0;
-		skewY = 0;
 		alpha = 1;
-		_dirty = true;
-	}
-
-	public inline function copyFrom(other:Transform):Void {
-		x = other.x;
-		y = other.y;
-		z = other.z;
-		rotationX = other.rotationX;
-		rotationY = other.rotationY;
-		rotationZ = other.rotationZ;
-		scaleX = other.scaleX;
-		scaleY = other.scaleY;
-		scaleZ = other.scaleZ;
-		skewX = other.skewX;
-		skewY = other.skewY;
-		alpha = other.alpha;
 		_dirty = true;
 	}
 }
