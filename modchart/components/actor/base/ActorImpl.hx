@@ -41,10 +41,13 @@ abstract class ActorImpl implements IActor {
 	public function draw(parentMatrix:Null<Mat4>):Void {
 		if (!visible)
 			return;
-		var worldTransform = parentMatrix != null ? _localTransform.getMatrix() * parentMatrix : _localTransform.getMatrix();
+		var worldMatrix = parentMatrix != null ? parentMatrix * _localTransform.getMatrix() : _localTransform.getMatrix();
+		render(worldMatrix);
 		for (child in _children)
-			child.draw(worldTransform);
+			child.draw(worldMatrix);
 	}
+
+	private function render(worldMatrix:Mat4):Void {}
 
 	public function destroy():Void {
 		for (child in _children)

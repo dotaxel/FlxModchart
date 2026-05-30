@@ -1,46 +1,38 @@
 package modchart.internal;
 
+import flixel.FlxG;
 import glm.Mat4;
-import haxe.ds.StringMap;
-import lime.graphics.WebGL2RenderContext;
+import haxe.ds.IntMap;
 import lime.graphics.WebGLRenderContext;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLBuffer;
-import lime.graphics.opengl.GLProgram;
-import lime.graphics.opengl.GLShader;
 import lime.graphics.opengl.GLUniformLocation;
-import lime.math.Matrix4;
 import lime.utils.Float32Array;
 import lime.utils.UInt16Array;
-import modchart.math.Transform;
 import modchart.math.View;
-import openfl.display3D.textures.RectangleTexture;
+import openfl.display3D.Context3DCompareMode;
 import openfl.display3D.textures.TextureBase;
 
+@:access(openfl.display.BitmapData)
+@:access(openfl.display3D.Context3D)
+@:access(openfl.display3D.textures.TextureBase)
+@:access(lime.graphics.WebGLRenderContext)
+@:access(modchart.internal.Renderer)
 class Renderer {
 	public static var instance:Renderer;
 
 	static var quadVBO:GLBuffer;
 	static var quadEBO:GLBuffer;
 
-	static var basicProgram:GLProgram;
-	static var basicVertexShader:GLShader;
-	static var basicFragShader:GLShader;
-
-	static var uTex:GLUniformLocation;
-	static var uModel:GLUniformLocation;
-	static var uView:GLUniformLocation;
-	static var uProj:GLUniformLocation;
-
+	static var basicShader:Shader;
 	static var basicSetup:Bool = false;
 
 	public var view:View = new View();
 
-	var programs:StringMap<GLProgram> = new StringMap();
+	var __viewTexture:TextureBase;
 
-	var _wasDepthTest:Bool = false;
-	var _wasBlend:Bool = false;
 	var _matBuffer:Float32Array = new Float32Array(4 * 4);
+	var _identityMatrix:Mat4;
 
 	var gl(get, null):WebGLRenderContext;
 
@@ -53,74 +45,83 @@ class Renderer {
 			_initShaders();
 			basicSetup = true;
 		}
-
+		__viewTexture = Global.context3D.createRectangleTexture(FlxG.width, FlxG.height, BGRA, true);
+		_identityMatrix = Mat4.identity(new Mat4());
 		Renderer.instance = this;
 	}
 
 	// fake backbuffer or whatever
+	var targetStack:Array<TextureBase> = [];
+	var prepareQueue:IntMap<TextureBase> = new IntMap();
+
 	var currentTarget:Null<TextureBase>;
 
-	inline public function bindTarget(tex:Null<TextureBase>) {
-		currentTarget = tex;
-		setRenderToBackbuffer();
+	inline public function prepareTarget(tex:TextureBase) {
+		prepareQueue.set(@:privateAccess tex.__textureID.id, tex);
+	}
+
+	inline public function pushTarget(tex:TextureBase) {
+		targetStack.push(tex);
+		setRenderTexture(tex);
+
+		Global.context3D.__flushGLFramebuffer();
+		Global.context3D.__flushGLDepth();
+		Global.context3D.__flushGLViewport();
+
+		if (prepareQueue.exists(@:privateAccess tex.__textureID.id)) {
+			gl.clearColor(0, 1, 0, 1);
+			gl.clearDepth(1.0);
+			gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+			prepareQueue.remove(@:privateAccess tex.__textureID.id);
+		}
+	}
+
+	inline public function popTarget() {
+		if (targetStack.length == 0)
+			throw "No target to pop";
+
+		targetStack.pop();
+
+		if (targetStack.length == 0) {
+			setRenderToBackbuffer();
+		} else {
+			setRenderTexture(targetStack[targetStack.length - 1]);
+		}
+		Global.context3D.__flushGLFramebuffer();
+		Global.context3D.__flushGLDepth();
+		Global.context3D.__flushGLViewport();
 	}
 
 	inline public function setRenderTexture(tex:TextureBase) {
-		Global.context3D.setRenderToTexture(tex);
+		currentTarget = tex;
+		Global.context3D.setRenderToTexture(tex, true);
 	}
 
 	inline public function setRenderToBackbuffer() {
-		if (currentTarget != null) {
-			setRenderTexture(currentTarget);
-			return;
-		}
-
+		currentTarget = null;
 		Global.context3D.setRenderToBackBuffer();
 	}
 
 	public function prepare():Void {
-		gl.enable(gl.DEPTH_TEST);
-		gl.depthMask(true);
+		Global.context3D.setDepthTest(true, Context3DCompareMode.LESS);
 
-		gl.depthFunc(gl.LESS);
-
-		gl.clearColor(0, 1, 0, 1);
-		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+		prepareTarget(__viewTexture);
+		pushTarget(__viewTexture);
 	}
 
 	public function flush():Void {
-		gl.disable(gl.DEPTH_TEST);
-
-		gl.depthMask(false);
+		popTarget();
+		Global.context3D.setDepthTest(false, Context3DCompareMode.ALWAYS);
 		// I FUCKING HATE OPENFL I SPENT 2 HOURS DEBUGGING THIS
-		gl.depthFunc(gl.GREATER);
+		// gl.depthFunc(gl.GREATER);
 	}
 
-	public function drawQuad(texture:TextureBase, antialiasing:Bool, modelMatrix:Mat4, ?program:String):Void {
-		var glProgram:GLProgram = (program != null) ? (programs.get(program) ?? basicProgram) : basicProgram;
+	public function drawQuad(texture:TextureBase, antialiasing:Bool, modelMatrix:Mat4, ?shader:Null<Shader>, ?skipCamera:Bool = false):Void {
+		var shader:Shader = shader ?? basicShader;
+		shader.use();
 
-		gl.useProgram(glProgram);
-
-		var uModelLoc:GLUniformLocation;
-		var uViewLoc:GLUniformLocation;
-		var uProjLoc:GLUniformLocation;
-		var uTexLoc:GLUniformLocation;
-
-		if (glProgram == basicProgram) {
-			uModelLoc = uModel;
-			uViewLoc = uView;
-			uProjLoc = uProj;
-			uTexLoc = uTex;
-		} else {
-			uModelLoc = gl.getUniformLocation(glProgram, "model");
-			uViewLoc = gl.getUniformLocation(glProgram, "view");
-			uProjLoc = gl.getUniformLocation(glProgram, "projection");
-			uTexLoc = gl.getUniformLocation(glProgram, "tex");
-		}
-
-		_uploadMatrix(uModelLoc, modelMatrix);
-		_uploadMatrix(uViewLoc, view.getViewMatrix());
-		_uploadMatrix(uProjLoc, view.getProjMatrix());
+		@:privateAccess
+		shader._uploadMVP(modelMatrix, view.getViewMatrix(), view.getProjMatrix());
 
 		gl.activeTexture(gl.TEXTURE0);
 		@:privateAccess
@@ -133,7 +134,8 @@ class Renderer {
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
-		gl.uniform1i(uTexLoc, 0);
+		@:privateAccess
+		shader._bindTex();
 
 		gl.bindBuffer(GL.ARRAY_BUFFER, quadVBO);
 		gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, quadEBO);
@@ -151,11 +153,8 @@ class Renderer {
 		gl.bindBuffer(GL.ARRAY_BUFFER, null);
 		gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
 		gl.bindTexture(gl.TEXTURE_2D, null);
-		gl.useProgram(null);
-	}
 
-	public function registerProgram(name:String, program:GLProgram):Void {
-		programs.set(name, program);
+		shader.stopUsing();
 	}
 
 	inline function _uploadMatrix(loc:GLUniformLocation, m:Mat4):Void {
@@ -234,73 +233,6 @@ class Renderer {
 	}
 
 	function _initShaders():Void {
-		basicVertexShader = gl.createShader(gl.VERTEX_SHADER);
-		gl.shaderSource(basicVertexShader, VERTEX_SHADER_SRC);
-		gl.compileShader(basicVertexShader);
-
-		var vertStatus = gl.getShaderParameter(basicVertexShader, gl.COMPILE_STATUS);
-		if (!vertStatus)
-			ModchartLog("Failed to compile vertex shader: " + gl.getShaderInfoLog(basicVertexShader));
-
-		basicFragShader = gl.createShader(gl.FRAGMENT_SHADER);
-		gl.shaderSource(basicFragShader, FRAGMENT_SHADER_SRC);
-		gl.compileShader(basicFragShader);
-
-		var fragStatus = gl.getShaderParameter(basicFragShader, gl.COMPILE_STATUS);
-		if (!fragStatus)
-			ModchartLog("Failed to compile fragment shader: " + gl.getShaderInfoLog(basicFragShader));
-
-		basicProgram = gl.createProgram();
-		gl.attachShader(basicProgram, basicVertexShader);
-		gl.attachShader(basicProgram, basicFragShader);
-		gl.linkProgram(basicProgram);
-
-		var linkStatus = gl.getProgramParameter(basicProgram, gl.LINK_STATUS);
-		if (!linkStatus)
-			ModchartLog("Failed to link basic shader program: " + gl.getProgramInfoLog(basicProgram));
-
-		gl.detachShader(basicProgram, basicVertexShader);
-		gl.detachShader(basicProgram, basicFragShader);
-		gl.deleteShader(basicVertexShader);
-		gl.deleteShader(basicFragShader);
-
-		uTex = gl.getUniformLocation(basicProgram, "tex");
-		uModel = gl.getUniformLocation(basicProgram, "model");
-		uView = gl.getUniformLocation(basicProgram, "view");
-		uProj = gl.getUniformLocation(basicProgram, "projection");
+		basicShader = new Shader(null, null);
 	}
-
-	static final VERTEX_SHADER_SRC:String = "
-        #version 330 core
-
-        layout(location = 0) in vec3 aPos;
-        layout(location = 1) in vec2 aUV;
-
-        uniform mat4 model;
-        uniform mat4 view;
-        uniform mat4 projection;
-
-        out vec2 vUV;
-
-        void main()
-        {
-            gl_Position = projection * view * model * vec4(aPos, 1.0);
-            vUV = aUV;
-        }
-    ";
-
-	static final FRAGMENT_SHADER_SRC:String = "
-        #version 330 core
-
-        in vec2 vUV;
-
-        out vec4 FragColor;
-
-        uniform sampler2D tex;
-
-        void main()
-        {
-            FragColor = texture(tex, vUV);
-        }
-    ";
 }
