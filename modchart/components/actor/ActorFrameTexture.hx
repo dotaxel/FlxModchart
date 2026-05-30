@@ -13,7 +13,7 @@ import openfl.display3D.textures.RectangleTexture;
 class ActorFrameTexture extends ActorImpl {
 	public var shader:Null<Shader>;
 
-	var _view:View;
+	var view:View;
 
 	var __renderTarget:RectangleTexture;
 	var w:Int;
@@ -30,7 +30,8 @@ class ActorFrameTexture extends ActorImpl {
 		vec = new Vec3();
 		sizeMat = new Mat4();
 
-		_view = new View();
+		view = new View(width, height);
+
 		__renderTarget = Global.context3D.createRectangleTexture(width, height, BGRA, true);
 	}
 
@@ -42,7 +43,7 @@ class ActorFrameTexture extends ActorImpl {
 		Renderer.instance.pushTarget(__renderTarget);
 
 		var lastView = Renderer.instance.view;
-		Renderer.instance.view = _view;
+		Renderer.instance.view = view;
 
 		for (child in _children)
 			child.draw(null);

@@ -1,5 +1,6 @@
 package modchart.math;
 
+import flixel.FlxG;
 import flixel.math.FlxMath;
 import glm.GLM;
 import glm.Mat4;
@@ -16,6 +17,9 @@ class View {
 	@:dirty(_viewDirty) public var rotationY:Float = 0;
 	@:dirty(_viewDirty) public var rotationZ:Float = 0;
 
+	@:dirty(_projDirty) public var width:Int = 0;
+	@:dirty(_projDirty) public var height:Int = 0;
+
 	@:dirty(_projDirty) public var fov:Float = 60;
 	@:dirty(_projDirty) public var near:Float = 0.1;
 	@:dirty(_projDirty) public var far:Float = 1000;
@@ -31,7 +35,10 @@ class View {
 	var _viewDirty:Bool = true;
 	var _projDirty:Bool = true;
 
-	public function new() {
+	public function new(?width:Null<Int>, ?height:Null<Int>) {
+		this.width = width ?? FlxG.width;
+		this.height = height ?? FlxG.height;
+
 		_viewMatrix = new Mat4();
 		_projMatrix = new Mat4();
 
@@ -42,15 +49,7 @@ class View {
 		reset();
 	}
 
-	public inline function markViewDirty():Void {
-		_viewDirty = true;
-	}
-
-	public inline function markProjDirty():Void {
-		_projDirty = true;
-	}
-
-	public inline function markDirty():Void {
+	public inline function markDirty() {
 		_viewDirty = true;
 		_projDirty = true;
 	}
@@ -67,7 +66,6 @@ class View {
 		fov = 60;
 		near = 0.1;
 		far = 1000;
-		aspect = 1280 / 720;
 
 		markDirty();
 	}
@@ -103,6 +101,8 @@ class View {
 	}
 
 	public function getProjMatrix():Mat4 {
+		aspect = width / height;
+
 		if (_projDirty) {
 			GLM.perspective(fov * Math.PI / 180.0, aspect, near, far, _projMatrix);
 

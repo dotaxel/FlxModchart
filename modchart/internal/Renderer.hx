@@ -189,22 +189,22 @@ class Renderer {
 			0.5,
 			0.0,
 			0.0,
-			1.0, // top-left
+			0.0, // top-left
 			0.5,
 			0.5,
 			0.0,
 			1.0,
-			1.0, // top-right
+			0.0, // top-right
 			- 0.5,
 			-0.5,
 			0.0,
 			0.0,
-			0.0, // bottom-left
+			1.0, // bottom-left
 			0.5,
 			-0.5,
 			0.0,
 			1.0,
-			0.0 // bottom-right
+			1.0 // bottom-right
 		];
 
 		var indices:Array<Int> = [

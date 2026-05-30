@@ -82,6 +82,8 @@ class PlayState extends FlxState
 
 		@:privateAccess
 		screenBitmapWrap = BitmapData.fromTexture(renderer.__viewTexture);
+
+		FlxG.console.autoPause = false;
 	}
 
 	var dir:Vec4 = new Vec4();
