@@ -2,21 +2,19 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxState;
-import flixel.math.FlxMath;
 import glm.GLM;
 import glm.Mat4;
 import glm.Quat;
-import glm.Vec3;
 import glm.Vec4;
 import modchart.components.actor.Actor;
+import modchart.components.actor.ActorFrameTexture;
+import modchart.components.actor.ActorProxy.ProxyActor;
 import modchart.components.actor.SpriteActor;
-import modchart.internal.Global;
 import modchart.internal.Renderer;
-import modchart.math.Transform;
+import modchart.internal.Shader;
 import openfl.Assets;
 import openfl.Vector;
 import openfl.display.BitmapData;
-import openfl.display3D.textures.RectangleTexture;
 
 @:access(openfl.display.BitmapData)
 @:access(openfl.display3D.Context3D)
@@ -26,12 +24,19 @@ class PlayState extends FlxState
 {
 	var renderer:Renderer;
 
-	var screenTexture:RectangleTexture;
 	var screenBitmapWrap:BitmapData;
 
 	var mainActor:Actor;
-	var sprite1:SpriteActor;
+	var shader:Shader;
+	var shader2:Shader;
+
+	var aft:ActorFrameTexture;
+
+	var sprite:SpriteActor;
 	var sprite2:SpriteActor;
+
+	var proxy:ProxyActor;
+	var proxy2:ProxyActor;
 
 	override function create():Void
 	{
@@ -41,38 +46,68 @@ class PlayState extends FlxState
 
 		mainActor = new Actor();
 
-		for (i in 0...2 * 5)
-		{
-			var sprite1 = new SpriteActor(Assets.getBitmapData("assets/images/juan.png"));
-			sprite1.scaleX = sprite1.bitmap.width * .25;
-			sprite1.scaleY = sprite1.bitmap.height * .25;
-			var fovRad = (renderer.view.fov * Math.PI) / 180.0;
-			mainActor.addChild(sprite1);
+		shader2 = new Shader(null, Assets.getText("assets/data/tv.frag"));
+		shader = new Shader(Assets.getText("assets/data/test.vert"), Assets.getText("assets/data/test.frag"));
 
-			var xR = i % 2;
-			var zR = Math.floor(i / 2);
+		var t = Assets.getBitmapData("assets/images/juan.png");
+		var t2 = Assets.getBitmapData("assets/images/pera.png");
 
-			sprite1.x = 100 * FlxMath.signOf((i % 2) - 1);
-			sprite1.z = zR * 100;
-		}
+		sprite = new SpriteActor(t);
+		sprite.x = -100;
+		sprite.scaleX = 0.25;
+		sprite.scaleY = 0.25;
+		sprite.z = 200;
+		sprite.shader = shader;
+		mainActor.addChild(sprite);
 
-		// sprite2 = new SpriteActor(Assets.getBitmapData("assets/images/pera.png"));
-		// sprite2.scaleX = sprite2.bitmap.width;
-		// sprite2.scaleY = sprite2.bitmap.height;
-		// sprite2.z = 1;
-		// sprite1.addChild(sprite2);
+		sprite2 = new SpriteActor(t2);
+		sprite2.x = 100;
+		sprite2.scaleX = 0.25;
+		sprite2.scaleY = 0.25;
+		sprite2.z = 200;
+		sprite2.shader = shader;
+		mainActor.addChild(sprite2);
 
-		screenTexture = Global.context3D.createRectangleTexture(1280, 720, BGRA, true);
-		screenBitmapWrap = BitmapData.fromTexture(screenTexture);
+		aft = new ActorFrameTexture(Std.int(t.width * .25), Std.int(t.height * .25));
+		aft.shader = shader2;
+		mainActor.addChild(aft);
+
+		proxy = new ProxyActor(sprite);
+		proxy.z = -100;
+		aft.addChild(proxy);
+
+		proxy2 = new ProxyActor(sprite2);
+		proxy2.z = -100;
+		aft.addChild(proxy2);
+
+		@:privateAccess
+		screenBitmapWrap = BitmapData.fromTexture(renderer.__viewTexture);
 	}
 
 	var dir:Vec4 = new Vec4();
 	var mat:Mat4 = new Mat4();
 	var quat:Quat = new Quat();
 
+	var tmr = 0.;
+	var frame = 0;
+
 	override function update(dt:Float):Void
 	{
 		super.update(dt);
+
+		tmr += dt;
+		frame++;
+
+		shader.use();
+		shader.setFloat("iTime", tmr);
+		shader.stopUsing();
+
+		shader2.use();
+		@:privateAccess
+		shader2.setVec2("iResolution", aft.w, aft.h);
+		shader2.setFloat("iTime", tmr);
+		shader2.setInt("iFrame", frame);
+		shader2.stopUsing();
 
 		Quat.fromEuler(renderer.view.rotationX * Math.PI / 180, renderer.view.rotationY * Math.PI / 180, 0, quat);
 		GLM.rotate(quat, mat);
@@ -105,20 +140,17 @@ class PlayState extends FlxState
 		if (FlxG.keys.pressed.RIGHT)
 			renderer.view.rotationY += 50 * dt;
 
-		renderer.bindTarget(screenTexture);
-		FlxG.stage.context3D.__flushGLFramebuffer();
-
-		renderer.prepare();
-
 		mainActor.update(dt);
-		mainActor.draw(null);
-
-		renderer.bindTarget(null);
-		renderer.flush();
 	}
 
 	override function draw():Void
 	{
+		renderer.prepare();
+
+		mainActor.draw(null);
+
+		renderer.flush();
+
 		super.draw();
 
 		camera.canvas.graphics.beginBitmapFill(screenBitmapWrap);
