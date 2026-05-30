@@ -34,7 +34,6 @@ class ActorFrameTexture extends ActorImpl {
 		__renderTarget = Global.context3D.createRectangleTexture(width, height, BGRA, true);
 	}
 
-	// FIXME: not drawing a shit
 	override public function draw(parentMatrix:Null<Mat4>):Void {
 		if (!visible)
 			return;
